@@ -24,4 +24,30 @@ const tasks: Task[] = [
   },
 ];
 
-export default tasks;
+export const addTask = (task: Task) => {
+  tasks.push({
+    id: tasks.length + 1,
+    title: task.title,
+    status: task.status,
+  });
+};
+
+export const getTasks = () => {
+  return tasks;
+};
+
+export const findTaskIndexById = (id: number): number => {
+  return tasks.findIndex((task) => task.id === id);
+};
+
+export const findTaskById = (id: number): Task | undefined => {
+  return tasks.find((task) => task.id === id);
+};
+
+export const updateTask = (id: number, updatedData: Task, index: number) => {
+  tasks[index] = { ...tasks[index], ...updatedData };
+};
+
+export const deleteTask = (index: number): void => {
+  tasks.splice(index, 1);
+};

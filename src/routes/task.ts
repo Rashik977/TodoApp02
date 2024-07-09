@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express from "express";
 import {
   createTask,
   deleteTask,
@@ -7,16 +7,16 @@ import {
   updateTask,
 } from "../controller/task";
 
-const router = Router();
+const tasksRoutes = express.Router();
 
-router.get("/", getTasks);
+tasksRoutes.get("/", getTasks);
 
-router.get("/:id", getTaskById);
+tasksRoutes.get("/:id", getTaskById);
 
-router.post("/", createTask);
+tasksRoutes.post("/", createTask);
 
-router.put("/:id", updateTask);
+tasksRoutes.put("/:id", updateTask);
 
-router.delete("/:id", deleteTask);
+tasksRoutes.delete("/:id", deleteTask);
 
-export default router;
+export default tasksRoutes;

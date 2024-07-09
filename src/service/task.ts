@@ -1,15 +1,16 @@
 import { TASK_STATUS } from "../constants/TaskStatus";
 import { Task } from "../interfaces/task";
-import tasks from "../model/task";
+
+import * as TaskModel from "../model/task";
 
 // Get all tasks
 export const getTasks = () => {
-  return tasks;
+  return TaskModel.getTasks();
 };
 
 // Get task from the provided ID
 export const getTaskById = (id: number) => {
-  const task = tasks.find((task) => task.id === id);
+  const task = TaskModel.findTaskById(id);
 
   if (!task) return { error: "Task not found" };
 
@@ -26,18 +27,14 @@ export const createTask = (task: Task) => {
   if (!Object.values(TASK_STATUS).includes(task.status))
     return { error: "Invalid status" };
 
-  tasks.push({
-    id: tasks.length + 1,
-    title: task.title,
-    status: task.status,
-  });
+  TaskModel.addTask(task);
 
   return { message: "Task created" };
 };
 
 // function to update a task
 export const updateTask = (id: number, task: Task) => {
-  const taskIndex = tasks.findIndex((task) => task.id === id);
+  const taskIndex = TaskModel.findTaskIndexById(id);
 
   // Check if task exists
   if (taskIndex === -1) return { error: "Task not found" };
@@ -46,21 +43,20 @@ export const updateTask = (id: number, task: Task) => {
   if (task.status && !Object.values(TASK_STATUS).includes(task.status))
     return { message: "Invalid status" };
 
-  // Update tasks array
-  tasks[taskIndex] = { ...tasks[taskIndex], ...task };
+  TaskModel.updateTask(id, task, taskIndex);
 
   return { message: "Task updated" };
 };
 
 // function to delete a task
 export const deleteTask = (id: number) => {
-  const taskIndex = tasks.findIndex((task) => task.id === id);
+  const taskIndex = TaskModel.findTaskIndexById(id);
 
   // Check if task exists
   if (taskIndex === -1) return { error: "Task not found" };
 
   // Delete task from tasks array
-  tasks.splice(taskIndex, 1);
+  TaskModel.deleteTask(taskIndex);
 
   return { message: "Task deleted" };
 };
