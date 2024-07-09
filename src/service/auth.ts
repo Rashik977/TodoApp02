@@ -1,10 +1,15 @@
-import { sign, verify } from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 import { User } from "../interfaces/User";
 import { getUserByEmail } from "./user";
 import bcrypt from "bcrypt";
 import config from "../config";
 import { CustomError } from "../utils/CustomError";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/generateTokens";
 
+// Function to login existing user and return access and refresh tokens
 export async function login(body: Pick<User, "email" | "password">) {
   const existingUser = getUserByEmail(body.email);
 
@@ -27,18 +32,13 @@ export async function login(body: Pick<User, "email" | "password">) {
     email: existingUser.email,
   };
 
-  const s = config.jwt.secret!;
-
-  const accessToken = await sign(payload, s, {
-    expiresIn: config.jwt.accessExpiration,
-  });
-  const refreshToken = await sign(payload, s, {
-    expiresIn: config.jwt.refreshTokenExpiration,
-  });
+  const accessToken = await generateAccessToken(payload);
+  const refreshToken = await generateRefreshToken(payload);
 
   return { accessToken, refreshToken };
 }
 
+// Function to refresh access token and refresh token using refresh token
 export async function refresh(body: { refreshToken: string }) {
   try {
     const decoded = verify(body.refreshToken, config.jwt.secret!) as Pick<
@@ -50,15 +50,8 @@ export async function refresh(body: { refreshToken: string }) {
     const { id, name, email } = decoded;
     const payload = { id, name, email };
 
-    // Generate new access token
-    const accessToken = await sign(payload, config.jwt.secret!, {
-      expiresIn: config.jwt.accessExpiration,
-    });
-
-    // Generate new refresh token
-    const refreshToken = await sign(payload, config.jwt.secret!, {
-      expiresIn: config.jwt.refreshTokenExpiration,
-    });
+    const accessToken = await generateAccessToken(payload);
+    const refreshToken = await generateRefreshToken(payload);
 
     return { accessToken, refreshToken };
   } catch (error) {

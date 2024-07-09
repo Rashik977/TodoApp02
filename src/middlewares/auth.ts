@@ -3,6 +3,7 @@ import e, { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { CustomError } from "../utils/CustomError";
 
+// Middleware to authenticate user
 export async function auth(req: Request, res: Response, next: NextFunction) {
   const { authorization } = req.headers;
 

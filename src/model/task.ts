@@ -1,6 +1,7 @@
 import { TASK_STATUS } from "../constants/TaskStatus";
 import { Task } from "../interfaces/task";
 
+// Array to store tasks
 const tasks: Task[] = [
   {
     id: 1,

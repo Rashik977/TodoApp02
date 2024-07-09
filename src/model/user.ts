@@ -1,5 +1,6 @@
 import { User } from "../interfaces/User";
 
+// Array to store users, 1 dummy user for testing
 export const users: User[] = [
   {
     name: "rashik",
