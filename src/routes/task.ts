@@ -6,17 +6,18 @@ import {
   getTasks,
   updateTask,
 } from "../controller/task";
+import { auth } from "../middlewares/auth";
 
 const tasksRoutes = express.Router();
 
-tasksRoutes.get("/", getTasks);
+tasksRoutes.get("/", auth, getTasks);
 
-tasksRoutes.get("/:id", getTaskById);
+tasksRoutes.get("/:id", auth, getTaskById);
 
-tasksRoutes.post("/", createTask);
+tasksRoutes.post("/", auth, createTask);
 
-tasksRoutes.put("/:id", updateTask);
+tasksRoutes.put("/:id", auth, updateTask);
 
-tasksRoutes.delete("/:id", deleteTask);
+tasksRoutes.delete("/:id", auth, deleteTask);
 
 export default tasksRoutes;

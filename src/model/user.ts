@@ -9,6 +9,10 @@ export const users: User[] = [
   },
 ];
 
+export function getUsers() {
+  return users;
+}
+
 export function createUser(user: User) {
   return users.push({
     name: user.name,

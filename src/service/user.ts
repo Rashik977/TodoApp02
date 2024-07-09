@@ -1,19 +1,23 @@
 import { User } from "../interfaces/User";
-import { users } from "../model/user";
 import * as UserModel from "../model/user";
 import bcrypt from "bcrypt";
+import { CustomError } from "../utils/CustomError";
 
 export const getUsers = () => {
+  const users = UserModel.getUsers();
+
+  if (!users) throw new CustomError("No users found", 404);
+
   return users;
 };
 
 export async function createUser(user: User) {
   if (!user.email || !user.password)
-    return { error: "Email and password are required" };
-  
+    throw new CustomError("Email and password are required", 400);
+
   const existingUser = await getUserByEmail(user.email);
   if (existingUser) {
-    return { error: "User already exists" };
+    throw new CustomError("User already exists", 400);
   }
   const password = await bcrypt.hash(user.password, 10);
   user.password = password;
