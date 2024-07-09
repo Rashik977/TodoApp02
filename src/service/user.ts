@@ -12,8 +12,8 @@ export const getUsers = () => {
 };
 
 export async function createUser(user: User) {
-  if (!user.email || !user.password)
-    throw new CustomError("Email and password are required", 400);
+  if (!user.email || !user.password || !user.name)
+    throw new CustomError("Email, name and password are required", 400);
 
   const existingUser = await getUserByEmail(user.email);
   if (existingUser) {

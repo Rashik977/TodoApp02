@@ -41,32 +41,34 @@ export async function login(body: Pick<User, "email" | "password">) {
 
 export async function refresh(body: { refreshToken: string }) {
   try {
-    // Verify the refresh token
-    const { id, name, email } = verify(
-      body.refreshToken,
-      config.jwt.secret!
-    ) as Pick<User, "id" | "name" | "email">;
+    const decoded = verify(body.refreshToken, config.jwt.secret!) as Pick<
+      User,
+      "id" | "name" | "email"
+    >;
 
     // Extract the payload
-    const payload = {
-      id: id,
-      name: name,
-      email: email,
-    };
+    const { id, name, email } = decoded;
+    const payload = { id, name, email };
 
     // Generate new access token
-    const accessToken = sign(payload, config.jwt.secret!, {
+    const accessToken = await sign(payload, config.jwt.secret!, {
       expiresIn: config.jwt.accessExpiration,
     });
 
     // Generate new refresh token
-    const refreshToken = sign(payload, config.jwt.secret!, {
+    const refreshToken = await sign(payload, config.jwt.secret!, {
       expiresIn: config.jwt.refreshTokenExpiration,
     });
 
     return { accessToken, refreshToken };
   } catch (error) {
-    // Handle error (invalid token, etc.)
-    throw new CustomError("Invalid token", 400);
+    if (error instanceof Error) {
+      if (error.name === "TokenExpiredError") {
+        throw new CustomError("Refresh token expired", 401);
+      } else if (error.name === "JsonWebTokenError") {
+        throw new CustomError("Invalid token", 400);
+      }
+    }
+    throw new CustomError("Could not refresh token", 500);
   }
 }
